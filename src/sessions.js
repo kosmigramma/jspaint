@@ -204,12 +204,12 @@
 				$.getScript("lib/firebase.js")
 					.done(() => {
 						const config = {
-							apiKey: "AIzaSyBgau8Vu9ZE8u_j0rp-Lc044gYTX5O3X9k",
+							apiKey: "AIzaSyBIS65Ji8moVUa55tqsusRheh5CiLZUjKw",
 							authDomain: "jspaint.firebaseapp.com",
-							databaseURL: "https://jspaint.firebaseio.com",
-							projectId: "firebase-jspaint",
+							databaseURL: "https://kosmi-jspaint.firebaseio.com",
+							projectId: "kosmi-jspaint",
 							storageBucket: "",
-							messagingSenderId: "63395010995"
+							messagingSenderId: "461949065096"
 						};
 						firebase.initializeApp(config);
 						MultiUserSession.fb_root = firebase.database().ref("/");
