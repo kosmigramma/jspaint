@@ -201,16 +201,90 @@
 				this.start();
 			};
 			if (!MultiUserSession.fb_root) {
+				const hashCode = s => Math.abs(s.split('').reduce((a,b) => (((a << 5) - a) + b.charCodeAt(0))|0, 0));
 				$.getScript("lib/firebase.js")
 					.done(() => {
-						const config = {
+						const configs = [{
 							apiKey: "AIzaSyBIS65Ji8moVUa55tqsusRheh5CiLZUjKw",
 							authDomain: "jspaint.firebaseapp.com",
 							databaseURL: "https://kosmi-jspaint.firebaseio.com",
 							projectId: "kosmi-jspaint",
 							storageBucket: "",
 							messagingSenderId: "461949065096"
-						};
+						},
+						{
+							apiKey: "AIzaSyAS_no41TmPazLPEKmJmlJvwD-y6ttHV5I",
+							authDomain: "kosmi-jspaint2.firebaseapp.com",
+							databaseURL: "https://kosmi-jspaint2.firebaseio.com",
+							projectId: "kosmi-jspaint2",
+							storageBucket: "",
+							messagingSenderId: "1076429886805"
+						},
+						{
+							apiKey: "AIzaSyBMaez61l-HfLpTkJEr0zNisR9opBWgpwE",
+							authDomain: "kosmi-jspaint3.firebaseapp.com",
+							databaseURL: "https://kosmi-jspaint3.firebaseio.com",
+							projectId: "kosmi-jspaint3",
+							storageBucket: "",
+							messagingSenderId: "248623902263"
+						},
+						{
+							apiKey: "AIzaSyAbTGpYPHJy-7AshGJM-k5hJhEdUJ3WY8o",
+							authDomain: "kosmi-jspaint4.firebaseapp.com",
+							databaseURL: "https://kosmi-jspaint4.firebaseio.com",
+							projectId: "kosmi-jspaint4",
+							storageBucket: "",
+							messagingSenderId: "165644732035"
+						},
+						{
+							apiKey: "AIzaSyDEJBtZoTnBg1wv1QrA2fbIzXktE11mXxI",
+							authDomain: "kosmi-jspaint5.firebaseapp.com",
+							databaseURL: "https://kosmi-jspaint5.firebaseio.com",
+							projectId: "kosmi-jspaint5",
+							storageBucket: "",
+							messagingSenderId: "269306949007"
+						},
+						{
+							apiKey: "AIzaSyBpuPNzo8lYjMVUt2KKphoet4hTlL0uPRE",
+							authDomain: "kosmi-jspaint6.firebaseapp.com",
+							databaseURL: "https://kosmi-jspaint6.firebaseio.com",
+							projectId: "kosmi-jspaint6",
+							storageBucket: "",
+							messagingSenderId: "950489572329"
+						},
+						{
+							apiKey: "AIzaSyAYCYwbJVjCVnU8H-n4ey3srx9R4v5cbpk",
+							authDomain: "kosmi-jspaint7.firebaseapp.com",
+							databaseURL: "https://kosmi-jspaint7.firebaseio.com",
+							projectId: "kosmi-jspaint7",
+							storageBucket: "",
+							messagingSenderId: "414460571881"
+						},
+						{
+							apiKey: "AIzaSyB4s64dpeViTtbap7St7V34eULx3UreN8E",
+							authDomain: "kosmi-jspaint8.firebaseapp.com",
+							databaseURL: "https://kosmi-jspaint8.firebaseio.com",
+							projectId: "kosmi-jspaint8",
+							storageBucket: "",
+							messagingSenderId: "380198938867"
+						},
+						{
+							apiKey: "AIzaSyDqMhmQ1Ui_cLpTjwwg8nUXZR_n9PTIvX8",
+							authDomain: "kosmi-jspaint9.firebaseapp.com",
+							databaseURL: "https://kosmi-jspaint9.firebaseio.com",
+							projectId: "kosmi-jspaint9",
+							storageBucket: "",
+							messagingSenderId: "384045495762"
+						},
+						{
+							apiKey: "AIzaSyBN4kYH4Yo5d6Sp6VCZExjpLUBrstb9LMI",
+							authDomain: "kosmi-jspaint10.firebaseapp.com",
+							databaseURL: "https://kosmi-jspaint10.firebaseio.com",
+							projectId: "kosmi-jspaint10",
+							storageBucket: "",
+							messagingSenderId: "202524536959"
+						}];
+						const config = configs[hashCode(session_id) % configs.length];
 						firebase.initializeApp(config);
 						MultiUserSession.fb_root = firebase.database().ref("/");
 						on_firebase_loaded();
