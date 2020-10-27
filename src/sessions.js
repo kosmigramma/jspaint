@@ -205,10 +205,10 @@
 				$.getScript("lib/firebase.js")
 					.done(() => {
 						const configs = [{
-							apiKey: "AIzaSyBIS65Ji8moVUa55tqsusRheh5CiLZUjKw",
-							authDomain: "jspaint.firebaseapp.com",
-							databaseURL: "https://kosmi-jspaint.firebaseio.com",
-							projectId: "kosmi-jspaint",
+							apiKey: "AIzaSyCwsHwut64I4k_4Q3zclMMbE6teMv2h9So",
+							authDomain: "jspaint1.firebaseapp.com",
+							databaseURL: "https://kosmi-jspaint1.firebaseio.com",
+							projectId: "kosmi-jspaint1",
 							storageBucket: "",
 							messagingSenderId: "461949065096"
 						},
