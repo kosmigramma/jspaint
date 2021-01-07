@@ -191,113 +191,12 @@
 	class MultiUserSession {
 		constructor(session_id) {
 			this.id = session_id;
-			this._fb_listeners = [];
-
-			file_name = `[Loading ${this.id}]`;
+	                this.socket = io('http://localhost:5000', {transports: ['websocket']});
+                        this.socket.emit("join", session_id);
 			update_title();
-			const on_firebase_loaded = () => {
-				file_name = `[${this.id}]`;
-				update_title();
-				this.start();
-			};
-			if (!MultiUserSession.fb_root) {
-				const hashCode = s => Math.abs(s.split('').reduce((a,b) => (((a << 5) - a) + b.charCodeAt(0))|0, 0));
-				$.getScript("lib/firebase.js")
-					.done(() => {
-						const configs = [{
-							apiKey: "AIzaSyCwsHwut64I4k_4Q3zclMMbE6teMv2h9So",
-							authDomain: "jspaint1.firebaseapp.com",
-							databaseURL: "https://kosmi-jspaint1.firebaseio.com",
-							projectId: "kosmi-jspaint1",
-							storageBucket: "",
-							messagingSenderId: "461949065096"
-						},
-						{
-							apiKey: "AIzaSyAS_no41TmPazLPEKmJmlJvwD-y6ttHV5I",
-							authDomain: "kosmi-jspaint2.firebaseapp.com",
-							databaseURL: "https://kosmi-jspaint2.firebaseio.com",
-							projectId: "kosmi-jspaint2",
-							storageBucket: "",
-							messagingSenderId: "1076429886805"
-						},
-						{
-							apiKey: "AIzaSyBMaez61l-HfLpTkJEr0zNisR9opBWgpwE",
-							authDomain: "kosmi-jspaint3.firebaseapp.com",
-							databaseURL: "https://kosmi-jspaint3.firebaseio.com",
-							projectId: "kosmi-jspaint3",
-							storageBucket: "",
-							messagingSenderId: "248623902263"
-						},
-						{
-							apiKey: "AIzaSyAbTGpYPHJy-7AshGJM-k5hJhEdUJ3WY8o",
-							authDomain: "kosmi-jspaint4.firebaseapp.com",
-							databaseURL: "https://kosmi-jspaint4.firebaseio.com",
-							projectId: "kosmi-jspaint4",
-							storageBucket: "",
-							messagingSenderId: "165644732035"
-						},
-						{
-							apiKey: "AIzaSyDEJBtZoTnBg1wv1QrA2fbIzXktE11mXxI",
-							authDomain: "kosmi-jspaint5.firebaseapp.com",
-							databaseURL: "https://kosmi-jspaint5.firebaseio.com",
-							projectId: "kosmi-jspaint5",
-							storageBucket: "",
-							messagingSenderId: "269306949007"
-						},
-						{
-							apiKey: "AIzaSyBpuPNzo8lYjMVUt2KKphoet4hTlL0uPRE",
-							authDomain: "kosmi-jspaint6.firebaseapp.com",
-							databaseURL: "https://kosmi-jspaint6.firebaseio.com",
-							projectId: "kosmi-jspaint6",
-							storageBucket: "",
-							messagingSenderId: "950489572329"
-						},
-						{
-							apiKey: "AIzaSyAYCYwbJVjCVnU8H-n4ey3srx9R4v5cbpk",
-							authDomain: "kosmi-jspaint7.firebaseapp.com",
-							databaseURL: "https://kosmi-jspaint7.firebaseio.com",
-							projectId: "kosmi-jspaint7",
-							storageBucket: "",
-							messagingSenderId: "414460571881"
-						},
-						{
-							apiKey: "AIzaSyB4s64dpeViTtbap7St7V34eULx3UreN8E",
-							authDomain: "kosmi-jspaint8.firebaseapp.com",
-							databaseURL: "https://kosmi-jspaint8.firebaseio.com",
-							projectId: "kosmi-jspaint8",
-							storageBucket: "",
-							messagingSenderId: "380198938867"
-						},
-						{
-							apiKey: "AIzaSyDqMhmQ1Ui_cLpTjwwg8nUXZR_n9PTIvX8",
-							authDomain: "kosmi-jspaint9.firebaseapp.com",
-							databaseURL: "https://kosmi-jspaint9.firebaseio.com",
-							projectId: "kosmi-jspaint9",
-							storageBucket: "",
-							messagingSenderId: "384045495762"
-						},
-						{
-							apiKey: "AIzaSyBN4kYH4Yo5d6Sp6VCZExjpLUBrstb9LMI",
-							authDomain: "kosmi-jspaint10.firebaseapp.com",
-							databaseURL: "https://kosmi-jspaint10.firebaseio.com",
-							projectId: "kosmi-jspaint10",
-							storageBucket: "",
-							messagingSenderId: "202524536959"
-						}];
-						const config = configs[hashCode(session_id) % configs.length];
-						firebase.initializeApp(config);
-						MultiUserSession.fb_root = firebase.database().ref("/");
-						on_firebase_loaded();
-					})
-					.fail(() => {
-						show_error_message("Failed to load Firebase; the document will not load, and changes will not be saved.");
-						file_name = `[Failed to load ${this.id}]`;
-						update_title();
-					});
-			}
-			else {
-				on_firebase_loaded();
-			}
+			file_name = `[${this.id}]`;
+			update_title();
+			this.start();
 		}
 		start() {
 			// @TODO: how do you actually detect if it's failing???
@@ -317,46 +216,26 @@
 			});
 			$w.center();
                         */
-			
-			// Wrap the Firebase API because they don't
-			// provide a great way to clean up event listeners
-			const _fb_on = (fb, event_type, callback, error_callback) => {
-				this._fb_listeners.push({ fb, event_type, callback, error_callback });
-				fb.on(event_type, callback, error_callback);
-			};
-			// Get Firebase references
-			this.fb = MultiUserSession.fb_root.child(this.id);
-			this.fb_data = this.fb.child("data");
-			this.fb_users = this.fb.child("users");
-			if (user_id) {
-				this.fb_user = this.fb_users.child(user_id);
-			}
-			else {
-				this.fb_user = this.fb_users.push();
-				user_id = this.fb_user.key;
-			}
-			// Remove the user from the session when they disconnect
-			this.fb_user.onDisconnect().remove();
-			// Make the user present in the session
-			this.fb_user.set(user);
-			// @TODO: Execute the above two lines when .info/connected
-			// For each existing and new user
-			_fb_on(this.fb_users, "child_added", snap => {
-				// Is this you?
-				if (snap.key === user_id) {
-					// You already have a cursor.
-					return;
-				}
-				// Get the Firebase reference for this user
-				const fb_other_user = snap.ref;
-				// Get the user object stored on the server
-				let other_user = snap.val();
+			const cursors = {};
+			this.socket.on("user:disconnect", (userId) => {
+			    if(cursors[userId]) {
+			        cursors[userId].remove();
+			        delete cursors[userId];
+			    }
+			})
+			this.socket.on("moveCursor", ({userId, x, y, away}) => {
+				const cursor_canvas = cursors[userId] || make_canvas(32, 32);
+				cursors[userId] = cursor_canvas;
 				// @TODO: display other cursor types?
 				// @TODO: display pointer button state?
 				// @TODO: display selections
-				const cursor_canvas = make_canvas(32, 32);
 				// Make the cursor element
 				const $cursor = $(cursor_canvas).addClass("user-cursor").appendTo($app);
+				const hashCode = s => Number("0." + Math.abs(userId.split('').reduce((a,b) => (((a << 5) - a) + b.charCodeAt(0))|0, 0)));
+				const hue = ~~(hashCode(userId) * 360);
+				const saturation = ~~(hashCode(userId) * 50) + 50;
+				const lightness= ~~(hashCode(userId) * 40) + 50;
+				const color = `hsla(${hue}, ${saturation}%, ${lightness}%, 1)`;
 				$cursor.css({
 					display: "none",
 					position: "absolute",
@@ -367,21 +246,12 @@
 					pointerEvents: "none",
 					transition: "opacity 0.5s",
 				});
-				// When the cursor data changes
-				_fb_on(fb_other_user, "value", snap => {
-					other_user = snap.val();
-					// If the user has left
-					if (other_user == null) {
-						// Remove the cursor element
-						$cursor.remove();
-					}
-					else {
 						// Draw the cursor
 						const draw_cursor = () => {
 							cursor_canvas.width = cursor_image.width;
 							cursor_canvas.height = cursor_image.height;
 							const cctx = cursor_canvas.ctx;
-							cctx.fillStyle = other_user.color;
+							cctx.fillStyle = color;
 							cctx.fillRect(0, 0, cursor_canvas.width, cursor_canvas.height);
 							cctx.globalCompositeOperation = "multiply";
 							cctx.drawImage(cursor_image, 0, 0);
@@ -399,12 +269,10 @@
 						$cursor.css({
 							display: "block",
 							position: "absolute",
-							left: canvas_rect.left + magnification * other_user.cursor.x,
-							top: canvas_rect.top + magnification * other_user.cursor.y,
-							opacity: 1 - other_user.cursor.away,
+							left: canvas_rect.left + magnification * x,
+							top: canvas_rect.top + magnification * y,
+							opacity: 1 - away,
 						});
-					}
-				});
 			});
 			let previous_uri;
 			// let pointer_operations = []; // the multiplayer syncing stuff is a can of worms, so this is disabled
@@ -418,12 +286,8 @@
 				if (previous_uri !== uri) {
 					// log("clear pointer operations to set data", pointer_operations);
 					// pointer_operations = [];
-					log("Write canvas data to Firebase");
-					this.fb_data.set(uri);
+					this.socket.emit("updateCanvas", {roomId: this.id, uri});
 					previous_uri = uri;
-				}
-				else {
-					log("(Don't write canvas data to Firebase; it hasn't changed)");
 				}
 			}, 100);
 			let ignore_session_update = false;
@@ -435,76 +299,61 @@
 				write_canvas_to_database();
 			});
 			// Any time we change or recieve the image data
-			_fb_on(this.fb_data, "value", snap => {
-				log("Firebase data update");
-				const uri = snap.val();
-				if (uri == null) {
-					// If there's no value at the data location, this is a new session
-					// Sync the current data to it
+			this.socket.on("updateCanvas", ({ uri }) => {
+				if(!uri) {
 					write_canvas_to_database();
+					return;
 				}
-				else {
-					previous_uri = uri;
-					saved = true; // hopefully
-					// Load the new image data
-					const img = new Image();
-					img.onload = () => {
-						// Cancel any in-progress pointer operations
-						// if (pointer_operations.length) {
-						// 	$G.triggerHandler("pointerup", "cancel");
-						// }
+				previous_uri = uri;
+				saved = true; // hopefully
+				// Load the new image data
+				const img = new Image();
+				img.onload = () => {
+					// Cancel any in-progress pointer operations
+					// if (pointer_operations.length) {
+					// 	$G.triggerHandler("pointerup", "cancel");
+					// }
 
-						const test_canvas = make_canvas(img);
-						const image_data_remote = test_canvas.ctx.getImageData(0, 0, test_canvas.width, test_canvas.height);
-						const image_data_local = ctx.getImageData(0, 0, canvas.width, canvas.height);
-						
-						if (!image_data_match(image_data_remote, image_data_local, 5)) {
-							ignore_session_update = true;
-							undoable({
-								name: "Sync Session",
-								icon: get_help_folder_icon("p_database.png"),
-							}, ()=> {
-								// Write the image data to the canvas
-								ctx.copy(img);
-								$canvas_area.trigger("resize");
-							});
-							ignore_session_update = false;
-						}
+					const test_canvas = make_canvas(img);
+					const image_data_remote = test_canvas.ctx.getImageData(0, 0, test_canvas.width, test_canvas.height);
+					const image_data_local = ctx.getImageData(0, 0, canvas.width, canvas.height);
+					
+					if (!image_data_match(image_data_remote, image_data_local, 5)) {
+						ignore_session_update = true;
+						undoable({
+							name: "Sync Session",
+							icon: get_help_folder_icon("p_database.png"),
+						}, ()=> {
+							// Write the image data to the canvas
+							ctx.copy(img);
+							$canvas_area.trigger("resize");
+						});
+						ignore_session_update = false;
+					}
 
-						// (detect_transparency() here would not be ideal
-						// Perhaps a better way of syncing transparency
-						// and other options will be established)
-						/*
-						// Playback recorded in-progress pointer operations
-						log("Playback", pointer_operations);
+					// (detect_transparency() here would not be ideal
+					// Perhaps a better way of syncing transparency
+					// and other options will be established)
+					/*
+					// Playback recorded in-progress pointer operations
+					log("Playback", pointer_operations);
 
-						for (const e of pointer_operations) {
-							// Trigger the event at each place it is listened for
-							$canvas.triggerHandler(e, ["synthetic"]);
-							$G.triggerHandler(e, ["synthetic"]);
-						}
-						*/
-					};
-					img.src = uri;
-				}
-			}, error => {
-				show_error_message("Failed to retrieve data from Firebase. The document will not load, and changes will not be saved.", error);
-				file_name = `[Failed to load ${this.id}]`;
-				update_title();
-			});
+					for (const e of pointer_operations) {
+						// Trigger the event at each place it is listened for
+						$canvas.triggerHandler(e, ["synthetic"]);
+						$G.triggerHandler(e, ["synthetic"]);
+					}
+					*/
+				};
+				img.src = uri;
+                        });
 			// Update the cursor status
 			$G.on("pointermove.session-hook", e => {
 				const m = to_canvas_coords(e);
-				this.fb_user.child("cursor").update({
-					x: m.x,
-					y: m.y,
-					away: false,
-				});
+			        this.socket.emit("moveCursor", {roomId: this.id, x: m.x, y:m.y, away: false})
 			});
 			$G.on("blur.session-hook", ()=> {
-				this.fb_user.child("cursor").update({
-					away: true,
-				});
+			        this.socket.emit("moveCursor", {roomId: this.id, x: 0, y: 0, away: true})
 			});
 			// @FIXME: the cursor can come back from "away" via a pointer event
 			// while the window is blurred and stay there when the user goes away
@@ -543,14 +392,6 @@
 			// Remove session-related hooks
 			$G.off(".session-hook");
 			// $canvas_area.off("pointerdown.session-hook");
-			// Remove collected Firebase event listeners
-			this._fb_listeners.forEach(({ fb, event_type, callback/*, error_callback*/ }) => {
-				log(`Remove listener for ${fb.path.toString()} .on ${event_type}`);
-				fb.off(event_type, callback);
-			});
-			this._fb_listeners.length = 0;
-			// Remove the user from the session
-			this.fb_user.remove();
 			// Remove any cursor elements
 			$app.find(".user-cursor").remove();
 			// Reset to "untitled"
