@@ -13,7 +13,6 @@ package-lock.json
 jsconfig.json
 Dockerfile
 .dockerignore
-default.conf
 README.md
 CONTRIBUTING.md
 TODO.md
