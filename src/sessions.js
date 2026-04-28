@@ -191,7 +191,7 @@
 	class MultiUserSession {
 		constructor(session_id) {
 			this.id = session_id;
-	                this.socket = io('https://backend.paint.kosmi.io', {transports: ['websocket']});
+	                this.socket = io('https://backend.paint.apps.cidran.com', {transports: ['websocket']});
                         this.socket.emit("join", session_id);
 			update_title();
 			file_name = `[${this.id}]`;
